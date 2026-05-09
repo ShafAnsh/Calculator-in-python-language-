@@ -1,538 +1,357 @@
-import cmath
+import tkinter as tk
+from tkinter import ttk, messagebox
 import math
+import numpy as np
+import statistics
 
-def menu():         #main
-    print("choose the type of calculation you want to perfrom")
-    print("1.Basic Mathematics")
-    print("2.Algebra")
-    # print("3.Matrix Operations")
-    print("4.Geometry")
-    # print("5.Unit COnverter")
-    print("6.Number System")
-    print("7.Statistics")
-    # print("8.Trignometry")
-    print("0.Exit\n")
-#Basic operations
+# Calculation functions
 
-def Basic_mathmatics():     #basic maths 
-    print("1.addition:\n""2.subtraction\n""3.Multiplication:\n""4.Division:\n""5.Square Root:\n""6.Power:\n""7.Logarithm:\n""8.Exponential:\n""9.Percentage:\n""10.Factorial:\n""0.Exit:\n")
+def safe_float(s):
+    try:
+        return float(s)
+    except:
+        raise ValueError("Invalid numeric input")
 
-def addition(a,b):
-    return a + b
+def basic_math(op, a, b):
+    if op == "Addition": return a + b
+    if op == "Subtraction": return a - b
+    if op == "Multiplication": return a * b
+    if op == "Division":
+        if b == 0: raise ZeroDivisionError("Division by zero")
+        return a / b
 
-def subtraction(a,b):
-    return a - b
+def algebra_quadratic(a, b, c):
+    if a == 0: raise ValueError("Coefficient a cannot be 0 for quadratic")
+    d = b**2 - 4*a*c
+    if d < 0: return "No real roots"
+    r1 = (-b + math.sqrt(d)) / (2*a)
+    r2 = (-b - math.sqrt(d)) / (2*a)
+    return f"{r1}, {r2}"
 
-def  multiplication(a,b):
-    return a * b
+def algebra_linear(a, b):
+    if a == 0: raise ValueError("Coefficient a cannot be 0 for linear equation")
+    return -b / a
 
-def devision(a,b):
-    if b == 0:
-        return "Can't devide by zero"
-    return a / b
+def matrix_from_entries(entries):
+    try:
+        vals = [float(e.get()) for e in entries]
+        return np.array([[vals[0], vals[1]], [vals[2], vals[3]]])
+    except Exception:
+        raise ValueError("Matrix entries must be numeric")
 
-def square_root(a):
-    return cmath.sqrt(a)
+def matrix_add(m1, m2): return m1 + m2
+def matrix_mul(m1, m2): return np.dot(m1, m2)
+def matrix_det(m): return float(np.linalg.det(m))
 
-def power(a,b):
-    return a**b
+def geometry_area_circle(r):
+    if r < 0: raise ValueError("Radius cannot be negative")
+    return math.pi * r * r
 
-def logarithm(a):
-    if a<= 0:
-        return "Log Undefined"
-    return math.log(a)
+def geometry_area_rectangle(l, w):
+    if l < 0 or w < 0: raise ValueError("Length/width cannot be negative")
+    return l * w
 
-def exponential(a):
-    return cmath.exp(a) 
+def geometry_area_triangle(b, h):
+    if b < 0 or h < 0: raise ValueError("Base/height cannot be negative")
+    return 0.5 * b * h
 
-def percentage(a,b):
-    if b == 0:
-        return("Can't devide by 0. Choose positive number greater than 0")
-    return (a/b) * 100
+def unit_convert(op, v):
+    if op == "cm to m": return v / 100.0
+    if op == "m to cm": return v * 100.0
+    if op == "Celsius to Fahrenheit": return (v * 9/5) + 32
+    if op == "Fahrenheit to Celsius": return (v - 32) * 5/9
 
-def factorial(a):
-    if a < 0 :
-        return "Factorial not defined. Choose greate than 0 "
-    return math.factorial(int(a))
+def number_system_convert(op, n):
+    if n < 0: raise ValueError("Only non-negative integers supported")
+    if op == "Decimal to Binary": return bin(n)[2:]
+    if op == "Decimal to Octal": return oct(n)[2:]
+    if op == "Decimal to Hexadecimal": return hex(n)[2:].upper()
 
-#Algebra
-def algebra():          #Algebra
-    print("Algebra...\n""1.Linear Equation Solver.\n""2.Quadratic Equation Solver.""0.exit")
+def stats_calc(op, nums):
+    if len(nums) == 0: raise ValueError("No numbers provided")
+    if op == "Mean": return statistics.mean(nums)
+    if op == "Median": return statistics.median(nums)
+    if op == "Mode": return statistics.mode(nums)
 
-def linear_eq():
-    print("ax + b = 0")
-    a = int(input("enter value for a:"))
-    b = int(input("enter value for b:"))
-    x = -b/a
-    if a ==0:
-        print("Choose greater than 0 as A must be some value.")
-    else:
-        x = -b/a
-        return x 
+def trig_calc(op, angle_deg):
+    rad = math.radians(angle_deg)
+    if op == "Sine": return math.sin(rad)
+    if op == "Cosine": return math.cos(rad)
+    if op == "Tangent":
+        cosv = math.cos(rad)
+        if abs(cosv) < 1e-12: raise ValueError("Tangent undefined for this angle")
+        return math.tan(rad)
+
+# Helper UI functions
+
+def show_result(value):
+    messagebox.showinfo("Result", f"{value}")
+
+def show_error(e):
+    messagebox.showerror("Error", f"{e}")
+
+# GUI Setup and Styling
+
+root = tk.Tk()
+root.title("Advanced Styled Calculator")
+root.geometry("900x700")
+root.resizable(False, False)
+
+style = ttk.Style()
+
+# Use a built-in theme and then customize
+
+style.theme_use("clam")
+
+# Colors and fonts
         
-def quadratic_eq():
-    print("ax**2+bx+c=0")
-    a = int(input("Enter value of a:"))
-    b = int(input("Enter value of b :"))
-    c = int(input("Enter value of c :"))
-    if a == 0:
-        print("a can't be 0")
-    else:
-        d = (b**2)-(4*a*c)
-        x1 =(-b + cmath.sqrt(d))/(2*a)
-        x2 = (-b - cmath.sqrt(d))/(2*a)
-        return x1,x2
-    
+BG = "#2B2F3A"
+TAB_BG = "#3B4252"
+ACCENT = "#88C0D0"
+BTN_BG = "#5E81AC"
+FG = "#ECEFF4"
+ENTRY_BG = "#ECEFF4"
 
-#Geometry
-def area_circle():
-    r = float(input("Enter radius: "))
-    area = math.pi * r * r
-    return area
+root.configure(bg=BG)
+style.configure("TNotebook", background=BG, borderwidth=0)
+style.configure("TNotebook.Tab", background=TAB_BG, foreground=FG, padding=(12, 8), font=("Segoe UI", 10, "bold"))
+style.map("TNotebook.Tab", background=[("selected", ACCENT)], foreground=[("selected", "#1B1F24")])
 
+style.configure("TFrame", background=BG)
+style.configure("TLabel", background=BG, foreground=FG, font=("Segoe UI", 11))
+style.configure("TButton", background=BTN_BG, foreground=FG, font=("Segoe UI", 10, "bold"), padding=8)
+style.map("TButton", background=[("active", ACCENT)])
 
-def area_rectangle():
-    l = float(input("Enter length: "))
-    b = float(input("Enter breadth: "))
-    area = l * b
-    return area
+style.configure("TEntry", fieldbackground=ENTRY_BG, foreground="#1B1F24", font=("Segoe UI", 11))
 
+notebook = ttk.Notebook(root)
+notebook.pack(expand=True, fill="both", padx=12, pady=12)
 
-def area_triangle():
-    b = float(input("Enter base: "))
-    h = float(input("Enter height: "))
-    area = 0.5 * b * h
-    return area
+# Utility to create labeled entry
 
-def perimeter_circle():
-    r = float(input("Enter radius: "))
-    perimeter = 2 * math.pi * r
-    return perimeter
+def labeled_entry(parent, label_text):
+    frame = ttk.Frame(parent)
+    lbl = ttk.Label(frame, text=label_text)
+    ent = ttk.Entry(frame, width=30)
+    lbl.pack(anchor="w", pady=(0,4))
+    ent.pack(fill="x")
+    return frame, ent
 
+# Basic Mathematics Tab
 
-def perimeter_rectangle():
-    l = float(input("Enter length: "))
-    b = float(input("Enter breadth: "))
-    perimeter = 2 * (l + b)
-    return perimeter
+tab_math = ttk.Frame(notebook, padding=16)
+notebook.add(tab_math, text="Basic Mathematics")
 
+f1, ent_a = labeled_entry(tab_math, "First number")
+f1.pack(fill="x", pady=6)
+f2, ent_b = labeled_entry(tab_math, "Second number")
+f2.pack(fill="x", pady=6)
 
-def perimeter_triangle():
-    a = float(input("Enter side 1: "))
-    b = float(input("Enter side 2: "))
-    c = float(input("Enter side 3: "))
-    perimeter = a + b + c
-    return perimeter
+btn_frame = ttk.Frame(tab_math)
+btn_frame.pack(pady=12)
 
-def volume_cube():
-    s = float(input("Enter side: "))
-    volume = s ** 3
-    return volume
+def math_action(op):
+    try:
+        a = safe_float(ent_a.get())
+        b = safe_float(ent_b.get())
+        res = basic_math(op, a, b)
+        show_result(res)
+    except Exception as e:
+        show_error(e)
 
+for i, op in enumerate(["Addition", "Subtraction", "Multiplication", "Division"]):
+    ttk.Button(btn_frame, text=op, width=18, command=lambda o=op: math_action(o)).grid(row=0, column=i, padx=6, pady=6)
 
-def volume_sphere():
-    r = float(input("Enter radius: "))
-    volume = (4 / 3) * math.pi * (r ** 3)
-    return volume
+# Algebra Tab
 
+tab_alg = ttk.Frame(notebook, padding=16)
+notebook.add(tab_alg, text="Algebra")
 
-def volume_cylinder():
-    r = float(input("Enter radius: "))
-    h = float(input("Enter height: "))
-    volume = math.pi * (r ** 2) * h
-    return volume
+fa, ent_aa = labeled_entry(tab_alg, "Coefficient a")
+fa.pack(fill="x", pady=6)
+fb, ent_bb = labeled_entry(tab_alg, "Coefficient b")
+fb.pack(fill="x", pady=6)
+fc, ent_cc = labeled_entry(tab_alg, "Coefficient c (for quadratic)")
+fc.pack(fill="x", pady=6)
 
+alg_frame = ttk.Frame(tab_alg)
+alg_frame.pack(pady=12)
 
+def alg_quadratic_action():
+    try:
+        a = safe_float(ent_aa.get()); b = safe_float(ent_bb.get()); c = safe_float(ent_cc.get())
+        res = algebra_quadratic(a, b, c)
+        show_result(res)
+    except Exception as e:
+        show_error(e)
 
-#Unit Converter  
-# def unit_converter():
-#     print("UNIT CONVERTER.\n")
-#     print("1.Temperature converter\n""2.Length converter\n""3.weight converter\n""4.Time converter\n""5.Speed converter\n""0.Exit\n")
+def alg_linear_action():
+    try:
+        a = safe_float(ent_aa.get()); b = safe_float(ent_bb.get())
+        res = algebra_linear(a, b)
+        show_result(res)
+    except Exception as e:
+        show_error(e)
 
-# def temperature_conversion():
-#     while True:
+ttk.Button(alg_frame, text="Quadratic Roots", width=20, command=alg_quadratic_action).grid(row=0, column=0, padx=8, pady=6)
+ttk.Button(alg_frame, text="Solve Linear ax+b=0", width=20, command=alg_linear_action).grid(row=0, column=1, padx=8, pady=6)
 
-#         print("1.Celsius to Fahrenheit")
-#         print("2.Fahrenheit to Celsius")
-#         print("0.Exit")
+# Matrix Operations Tab
 
-#         temp_choice = int(input("Choose 1/2/0: "))
+tab_mat = ttk.Frame(notebook, padding=16)
+notebook.add(tab_mat, text="Matrix Operations")
 
-#         if temp_choice == 0:
-#             break
+ttk.Label(tab_mat, text="Matrix entries are entered row-wise for 2x2 matrices").pack(anchor="w", pady=(0,8))
 
-#         elif temp_choice == 1:
-#             print("Celsius to Fahrenheit:", fahrenheit())
+mat_frame = ttk.Frame(tab_mat)
+mat_frame.pack(fill="x", pady=6)
 
-#         elif temp_choice == 2:
-#             print("Fahrenheit to Celsius:", celsius())
+# Matrix 1 entries
 
-#         else:
-#             print("Invalid Choice... Try Again")
-# def meters_to_feet():
-#     meters = float(input("Enter meters: "))
+m1_frame = ttk.LabelFrame(mat_frame, text="Matrix 1", padding=10)
+m1_frame.grid(row=0, column=0, padx=8, pady=6, sticky="n")
+m1_entries = []
+for i in range(4):
+    e = ttk.Entry(m1_frame, width=8)
+    e.grid(row=i//2, column=i%2, padx=6, pady=6)
+    m1_entries.append(e)
 
-#     feet = meters * 3.28084
+# Matrix 2 entries
 
-#     print("Feet:", feet)
+m2_frame = ttk.LabelFrame(mat_frame, text="Matrix 2", padding=10)
+m2_frame.grid(row=0, column=1, padx=8, pady=6, sticky="n")
+m2_entries = []
+for i in range(4):
+    e = ttk.Entry(m2_frame, width=8)
+    e.grid(row=i//2, column=i%2, padx=6, pady=6)
+    m2_entries.append(e)
 
-
-# def feet_to_meters():
-#     feet = float(input("Enter feet: "))
-
-#     meters = feet / 3.28084
-
-#     print("Meters:", meters)
-
-
-# def kilometers_to_meters():
-#     kilometers = float(input("Enter kilometers: "))
-
-#     meters = kilometers * 1000
-
-#     print("Meters:", meters)
-
-# def meters_to_kilometers():
-#     meters = float(input("Enter meters: "))
-
-#     kilometers = meters / 1000
-
-#     print("Kilometers:", kilometers)
-
-
-# def centimeters_to_meters():
-#     centimeters = float(input("Enter centimeters: "))
-
-#     meters = centimeters / 100
-
-#     print("Meters:", meters)
-
-
-# def meters_to_centimeters():
-#     meters = float(input("Enter meters: "))
-
-#     centimeters = meters * 100
-
-#     print("Centimeters:", centimeters)
-
-
- 
-# def fahrenheit():
-#     c = float(input("Enter celcius:"))
-#     f = (c*9/5)+32
-#     return f
-        
-# def celsius():
-#     f = float(input("Enter fehranheit:"))
-#     c = (f-32)*5/9
-#     return c
-
-
-
-
-#statistics
-def statistics_menu():
-    print("STATISTICS..\n""1.mean: \n ""2.median: \n ""3.mode: \n ""4.Break..\n")
-
-def mean(numbers):
-    total = sum(numbers)
-    return total / len(numbers)
-
-def median(numbers):
-    numbers.sort()
-    n = len(numbers)
-
-    if n % 2 == 0:
-        mid1 = numbers[n // 2]
-        mid2 = numbers[(n // 2) - 1]
-        return (mid1 + mid2) / 2
-    else:
-        return numbers[n//2]
-
-def mode(numbers):
-    frequency = {}
-
-    for num in numbers:
-        if num in frequency:
-            frequency[num] += 1
+def mat_action(op):
+    try:
+        m1 = matrix_from_entries(m1_entries)
+        if op in ("Addition", "Multiplication"):
+            m2 = matrix_from_entries(m2_entries)
         else:
-            frequency[num] = 1
-
-    max_count = max(frequency.values())
-
-    for key, value in frequency.items():
-        if value == max_count:
-            return key
-
-#Number system convertor:
-def number_system_converter():
-    print("\n--- Number System Converter ---")
-    print("1. Binary to Decimal")
-    print("2. Decimal to Binary")
-    print("3. Octal to Decimal")
-    print("4. Decimal to Octal")
-    print("5. Hexadecimal to Decimal")
-    print("6. Decimal to Hexadecimal")
-    print("0. Back")
-
-def binary_to_decimal():
-    binary = input("Enter binary number: ")
-    decimal = int(binary, 2)
-    return decimal
-
-def decimal_to_binary():
-    decimal = int(input("Enter decimal number: "))
-    binary = bin(decimal)[2:]
-    return binary
-
-def octal_to_decimal():
-    octal = input("Enter octal number: ")
-    decimal = int(octal, 8)
-    return decimal
-
-def decimal_to_octal():
-    decimal = int(input("Enter decimal number: "))
-    octal = oct(decimal)[2:]
-    return octal
-
-def hexadecimal_to_decimal():
-    hexa = input("Enter hexadecimal number: ")
-    decimal = int(hexa, 16)
-    return decimal
-
-def decimal_to_hexadecimal():
-    decimal = int(input("Enter decimal number: "))
-    hexa = hex(decimal)[2:]
-    return hexa
-
-
-while True:
-    menu()
-    choice = int(input("Choose number from 0 to 8: "))
-
-    if choice == 1:
-        while True:
-            Basic_mathmatics()
-            choice = int(input("Choose operation from 0 to 10: "))
-
-            if choice == 0:
-                break
-
-            if choice in [1,2,3,4,6,9]:
-                a = float(input("Enter value for a: "))
-                b = float(input("Enter value for b: "))
-
-            elif choice in [5, 7, 8, 10]:
-                a = float(input("Enter value for a: "))
-
-            if choice ==1:
-                print(a,"+",b,"=",addition(a,b))
-            elif choice == 2:
-                print(a,"-",b,"=",subtraction(a,b))
-            elif choice == 3:
-                print(a,"*",b,"=",multiplication(a,b))
-            elif choice == 4:
-                print(a,"/",b,"=",devision(a,b))
-            elif choice == 5:
-                print("Square Root",square_root(a))
-            elif choice == 6:
-                print(a,"**",b,"=",power(a,b))
-            elif choice == 7:
-                print("Log:",logarithm(a))
-            elif choice == 8:
-                print("Exponential:",exponential(a))
-            elif choice == 9:
-                print("Percentage : ",percentage(a,b))
-            elif choice == 10:
-                print("Factorial",factorial(a))
-            else:
-                print("Invalid choice:")
-
-
-    
-    
-
-    elif choice ==2:
-        print("\nALgebra\n")
-        
-        while True:
-            algebra()
-            basic_choice = int(input("choose from 0,1,2:\n"))
+            m2 = None
+        if op == "Addition": res = matrix_add(m1, m2)
+        elif op == "Multiplication": res = matrix_mul(m1, m2)
+        elif op == "Determinant": res = matrix_det(m1)
+        show_result(res)
+    except Exception as e:
+        show_error(e)
+
+mat_btn_frame = ttk.Frame(tab_mat)
+mat_btn_frame.pack(pady=12)
+for i, op in enumerate(["Addition", "Multiplication", "Determinant"]):
+    ttk.Button(mat_btn_frame, text=op, width=18, command=lambda o=op: mat_action(o)).grid(row=0, column=i, padx=8, pady=6)
+
+# Geometry Tab
+
+tab_geo = ttk.Frame(notebook, padding=16)
+notebook.add(tab_geo, text="Geometry")
+
+g1f, ent_g1 = labeled_entry(tab_geo, "Primary value (radius / length / base)")
+g1f.pack(fill="x", pady=6)
+g2f, ent_g2 = labeled_entry(tab_geo, "Secondary value (width / height) if needed")
+g2f.pack(fill="x", pady=6)
+
+def geo_action(op):
+    try:
+        if op == "Area of Circle":
+            r = safe_float(ent_g1.get()); res = geometry_area_circle(r)
+        elif op == "Area of Rectangle":
+            l = safe_float(ent_g1.get()); w = safe_float(ent_g2.get()); res = geometry_area_rectangle(l, w)
+        elif op == "Area of Triangle":
+            b = safe_float(ent_g1.get()); h = safe_float(ent_g2.get()); res = geometry_area_triangle(b, h)
+        show_result(res)
+    except Exception as e:
+        show_error(e)
+
+for i, op in enumerate(["Area of Circle", "Area of Rectangle", "Area of Triangle"]):
+    ttk.Button(tab_geo, text=op, width=22, command=lambda o=op: geo_action(o)).pack(pady=6)
+
+# Unit Converter Tab
+
+tab_unit = ttk.Frame(notebook, padding=16)
+notebook.add(tab_unit, text="Unit Converter")
+
+uf, ent_u = labeled_entry(tab_unit, "Enter value to convert")
+uf.pack(fill="x", pady=6)
+
+def unit_action(op):
+    try:
+        v = safe_float(ent_u.get())
+        res = unit_convert(op, v)
+        show_result(res)
+    except Exception as e:
+        show_error(e)
+
+for op in ["cm to m", "m to cm", "Celsius to Fahrenheit", "Fahrenheit to Celsius"]:
+    ttk.Button(tab_unit, text=op, width=26, command=lambda o=op: unit_action(o)).pack(pady=6)
+
+# Number System Tab
+
+tab_num = ttk.Frame(notebook, padding=16)
+notebook.add(tab_num, text="Number System")
+
+nf, ent_n = labeled_entry(tab_num, "Enter non-negative integer")
+nf.pack(fill="x", pady=6)
+
+def num_action(op):
+    try:
+        n = int(ent_n.get())
+        if n < 0: raise ValueError("Enter a non-negative integer")
+        res = number_system_convert(op, n)
+        show_result(res)
+    except Exception as e:
+        show_error(e)
+
+for op in ["Decimal to Binary", "Decimal to Octal", "Decimal to Hexadecimal"]:
+    ttk.Button(tab_num, text=op, width=26, command=lambda o=op: num_action(o)).pack(pady=6)
+
+# Statistics Tab
+
+tab_stats = ttk.Frame(notebook, padding=16)
+notebook.add(tab_stats, text="Statistics")
+
+sf, ent_s = labeled_entry(tab_stats, "Enter numbers separated by commas")
+sf.pack(fill="x", pady=6)
+
+def stats_action(op):
+    try:
+        raw = ent_s.get().strip()
+        if not raw: raise ValueError("Provide comma-separated numbers")
+        nums = [safe_float(x) for x in raw.split(",")]
+        res = stats_calc(op, nums)
+        show_result(res)
+    except Exception as e:
+        show_error(e)
+
+for op in ["Mean", "Median", "Mode"]:
+    ttk.Button(tab_stats, text=op, width=20, command=lambda o=op: stats_action(o)).pack(pady=6)
+
+# Trigonometry Tab
+
+tab_trig = ttk.Frame(notebook, padding=16)
+notebook.add(tab_trig, text="Trigonometry")
 
-            if  basic_choice == 0:
-                break
+tf, ent_t = labeled_entry(tab_trig, "Enter angle in degrees")
+tf.pack(fill="x", pady=6)
 
-            if basic_choice == 1:
-                print("The value of x is :",linear_eq())
-            elif basic_choice == 2:
-               x1, x2 = quadratic_eq()
-               print("x1 =", x1, "x2 =", x2)
-            
-            else:
-                print("invalid , choose again..")
+def trig_action(op):
+    try:
+        angle = safe_float(ent_t.get())
+        res = trig_calc(op, angle)
+        show_result(res)
+    except Exception as e:
+        show_error(e)
 
-    elif choice ==3:
-        print("\nMatirx Operation\n")
+for op in ["Sine", "Cosine", "Tangent"]:
+    ttk.Button(tab_trig, text=op, width=20, command=lambda o=op: trig_action(o)).pack(pady=6)
 
-    elif choice ==4:
-        print("\nGeometry\m")
-        while True:
-            print("Geometry..\n""1.Area calculator.\n""2.Perimeter calculator.\n""3.Volume calculator.\n""0.Exit\n")
-            choice = int(input("Enter choice from 1,2,3,0\n"))
-            if choice == 1:
+# Footer and run
 
-                print("\nAREA CALCULATOR")
-                print("1. Circle")
-                print("2. Rectangle")
-                print("3. Triangle")
+footer = ttk.Label(root, text="Advanced Calculator • Basic algebra, matrices, geometry, conversions, stats, trig", anchor="center")
+footer.pack(side="bottom", fill="x", pady=8)
 
-                area_choice = int(input("Enter choice: "))
-
-                if area_choice == 1:
-                    print("Area of Circle =", area_circle())
-
-                elif area_choice == 2:
-                    print("Area of Rectangle =", area_rectangle())
-
-                elif area_choice == 3:
-                    print("Area of Triangle =", area_triangle())
-
-                else:
-                    print("Invalid choice")
-
-
-            elif choice == 2:
-
-                print("\nPERIMETER CALCULATOR")
-                print("1. Circle")
-                print("2. Rectangle")
-                print("3. Triangle")
-
-                peri_choice = int(input("Enter choice: "))
-
-                if peri_choice == 1:
-                    print("Circumference of Circle =", perimeter_circle())
-
-                elif peri_choice == 2:
-                    print("Perimeter of Rectangle =", perimeter_rectangle())
-
-                elif peri_choice == 3:
-                    print("Perimeter of Triangle =", perimeter_triangle())
-
-                else:
-                    print("Invalid choice")
-
-            elif choice == 3:
-
-                print("\nVOLUME CALCULATOR")
-                print("1. Cube")
-                print("2. Sphere")
-                print("3. Cylinder")
-
-                vol_choice = int(input("Enter choice: "))
-
-                if vol_choice == 1:
-                    print("Volume of Cube =", volume_cube())
-
-                elif vol_choice == 2:
-                    print("Volume of Sphere =", volume_sphere())
-
-                elif vol_choice == 3:
-                    print("Volume of Cylinder =", volume_cylinder())
-
-                else:
-                    print("Invalid choice")
-
-            elif choice == 0:
-                print("Program Ended")
-                break
-
-            else:
-                print("Invalid choice")
-
-
-    elif choice ==5:
-        print("\nUnit Converter\n")
-        while True:
-            unit_converter()
-            basic_choice = int(input("Choose from 1 to 6:\n"))
-
-            if basic_choice == 0:
-                break
-
-            elif basic_choice == 1:
-                temperature_conversion()
-
-            else:
-                print("Invalid.. Choose again")
-
-            
-            
-    elif choice ==6:
-        print("\nNumber System\n")
-        while True:
-            number_system_converter()
-            choice = input("choose from 0 to 6.\n")
-            if choice == "0":
-                break
-
-            if choice == "1":
-                print("Decimal =", binary_to_decimal())
-
-            elif choice == "2":
-                print("Binary =", decimal_to_binary())
-
-            elif choice == "3":
-                print("Decimal =", octal_to_decimal())
-
-            elif choice == "4":
-                print("Octal =", decimal_to_octal())
-
-            elif choice == "5":
-                print("Decimal =", hexadecimal_to_decimal())
-
-            elif choice == "6":
-                print("Hexadecimal =", decimal_to_hexadecimal())
-            else:
-                print("Invalid")
-
-
-        
-    elif choice ==7:
-        print("\nStatistics\n")
-        while True:
-            statistics_menu()
-            basic_choice = int(input("choose from 0,1,2,3,:\n"))
-            if  basic_choice == 0:
-                break
-
-            if basic_choice == 1:            
-                nums = list(map(float, input("Enter numbers separated by space: ").split()))            
-                print("Mean =",mean(nums))       
-                
-            elif basic_choice == 2:            
-                nums = list(map(float, input("Enter numbers separated by space: ").split()))            
-                print("Median =", median(nums))       
-            elif basic_choice == 3:            
-                nums = list(map(float, input("Enter numbers separated by space: ").split()))
-                print("Mode =", mode(nums))
-
-            else:            
-                print("Invalid choice")
-        
-    elif choice ==8:
-        print("Trignometry")
-        
-        
-
-
-    elif choice ==0:
-        print("exit")
-        break
-    else:
-         print("Invalid")
-
-
-
-
-
+root.mainloop()
